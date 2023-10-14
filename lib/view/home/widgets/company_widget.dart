@@ -32,8 +32,11 @@ class CompanyTile extends StatelessWidget {
           alignment: AlignmentDirectional.center,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10).r,
+              padding: const EdgeInsets.only(
+                left: 10,
+              ).r,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Text(
@@ -43,9 +46,23 @@ class CompanyTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  Text(
-                    matchScore,
-                    style: const TextStyle(color: Colors.green),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/stock price.png',
+                        height: 20.h,
+                        width: 35.w,
+                        fit: BoxFit.contain,
+                      ),
+                      Text(
+                        matchScore,
+                        style: const TextStyle(
+                            color: Colors.green,
+                            fontSize: 12,
+                            letterSpacing: -0.4),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     width: 10.w,
@@ -62,7 +79,7 @@ class CompanyTile extends StatelessWidget {
 
   Widget price() {
     return SizedBox(
-      width: 90.w,
+      width: 70.w,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -70,19 +87,22 @@ class CompanyTile extends StatelessWidget {
               ? IconButton(
                   onPressed: onPressed,
                   icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.add,
-                        size: 20,
+                        size: 22,
                         color: kSecondaryTextColor,
                       ),
                       SizedBox(
                         height: 5.h,
                       ),
                       const Text(
-                        'Start Watching',
+                        '     Start\n Watching',
                         style: TextStyle(
-                            color: kSecondaryTextColor, letterSpacing: -0.9),
+                            fontSize: 12,
+                            color: kSecondaryTextColor,
+                            letterSpacing: -0.1),
                       )
                     ],
                   ),
@@ -90,6 +110,7 @@ class CompanyTile extends StatelessWidget {
               : IconButton(
                   onPressed: null,
                   icon: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.remove_red_eye,

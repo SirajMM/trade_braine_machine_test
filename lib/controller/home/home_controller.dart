@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -7,9 +8,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:trade_brains/core/colors/color.dart';
 import 'package:trade_brains/core/constrains/api_key.dart';
 import 'package:trade_brains/core/constrains/api_url.dart';
 import 'package:trade_brains/model/company_data_model.dart';
+import 'package:trade_brains/utiles/toast.dart';
 
 import '../../data_base/hive_model.dart';
 import '../../helper/debouncer.dart';
@@ -18,17 +21,18 @@ class HomeController extends GetxController implements GetxService {
   @override
   void onInit() {
     log('init called');
-    loadData();
+    checkConnection();
     super.onInit();
   }
 
   TextEditingController searchController = TextEditingController();
   CompanyDetails? companyData;
   bool loading = false;
-  Debouncer debouncer = Debouncer(milliseconds: 500);
+  Debouncer debouncer = Debouncer(milliseconds: 600);
 
   Future<void> getCompanies(String? query) async {
     log('search query ******************$query');
+    checkConnection();
     if (query == null || query == '') {
       return;
     }
@@ -36,7 +40,7 @@ class HomeController extends GetxController implements GetxService {
     update();
     final uri = Uri.parse('$searchUrl$query&apikey=$apiKey');
     try {
-      final response = await http.get(uri);
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
       log('response data ${response.body}');
       if (response.statusCode == 200) {
         final dynamic data = jsonDecode(response.body);
@@ -44,12 +48,20 @@ class HomeController extends GetxController implements GetxService {
           companyData = CompanyDetails.fromJson(data);
         } else {
           log('Failed to get data');
+          showToast('Failed to fetch data');
         }
       } else {
+        showToast('Failed to load data');
         throw Exception('Failed to load data');
       }
     } catch (e) {
-      print('Error: $e');
+      if (e is TimeoutException) {
+        log('Connection timed out');
+        showToast(
+            'Connection timed out. Please check your internet connection.');
+      } else {
+        log('Error: $e');
+      }
     }
     loading = !loading;
     update();
@@ -63,7 +75,13 @@ class HomeController extends GetxController implements GetxService {
       matchScore: companyData!.bestMatches[index].the9MatchScore,
     );
     var box = CompanyData.getInstance();
-    box.add(company);
+    try {
+      box.add(company);
+      successToast('${company.name} added to watchlist');
+    } catch (e) {
+      log('error while adding to database :$e', error: e);
+    }
+
     update();
   }
 
@@ -79,48 +97,47 @@ class HomeController extends GetxController implements GetxService {
     update();
   }
 
-  void loadData() async {
+  void checkConnection() async {
     bool isInternetConnected = await checkInternetConnectivity();
     if (!isInternetConnected) {
-      Get.snackbar(
-        'No Internet',
-        'Please check your network connection.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
       Get.dialog(AlertDialog(
-        title: const Text('No Internet Connection'),
-        content: const Text("Please connect to internet and press 'OK'"),
+        backgroundColor: kSecondaryColor,
+        titleTextStyle:
+            const TextStyle(color: kDefaultIconLightColor, fontSize: 25),
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        title: const Text('Oops!'),
+        content: const Text(
+          "Please connect to internet and press 'OK'",
+          style: TextStyle(
+            color: kDefaultIconLightColor,
+          ),
+        ),
         actions: [
-          Row(
-            children: [
-              TextButton(
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: () {
-                  Get.back();
-                },
-              ),
-              TextButton(
-                child: const Text(
-                  'OK',
-                  style: TextStyle(color: Colors.green),
-                ),
-                onPressed: () {
-                  loadData();
-                  Get.back();
-                },
-              ),
-            ],
-          )
+          TextButton(
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.red),
+            ),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+          TextButton(
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.green),
+            ),
+            onPressed: () {
+              checkConnection();
+              Get.back();
+            },
+          ),
         ],
       ));
       return;
     }
-
-    update();
   }
 
   Future<bool> checkInternetConnectivity() async {

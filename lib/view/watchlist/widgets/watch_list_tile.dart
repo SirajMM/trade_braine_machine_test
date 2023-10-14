@@ -36,9 +36,23 @@ class WatchlistTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                  Text(
-                    company.matchScore!,
-                    style: const TextStyle(color: Colors.green),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/stock price.png',
+                        height: 20.h,
+                        width: 35.w,
+                        fit: BoxFit.contain,
+                      ),
+                      Text(
+                        company.matchScore!,
+                        style: const TextStyle(
+                            color: Colors.green,
+                            fontSize: 12,
+                            letterSpacing: -0.4),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     width: 10.w,
@@ -58,7 +72,7 @@ class WatchlistTile extends StatelessWidget {
       onPressed: onPressed,
       icon: const Icon(
         Icons.delete_outline,
-        size: 20,
+        size: 25,
         color: Colors.red,
       ),
     );

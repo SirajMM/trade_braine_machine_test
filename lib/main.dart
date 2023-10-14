@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(builder: (_, child) {
       return GetMaterialApp(
         title: 'Trade Brains',
+        defaultTransition: Transition.fadeIn,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

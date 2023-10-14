@@ -50,22 +50,31 @@ class WatchListScreen extends StatelessWidget {
               height: 10.h,
             ),
             Expanded(
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    final data = value.allCompanies[index];
-                    return WatchlistTile(
-                      company: data,
-                      onPressed: () {
-                        value.deleteCompany(data);
+              child: value.allCompanies.isNotEmpty
+                  ? ListView.separated(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final data =
+                            value.allCompanies.reversed.toList()[index];
+                        return WatchlistTile(
+                          company: data,
+                          onPressed: () {
+                            value.deleteCompany(data);
+                          },
+                        );
                       },
-                    );
-                  },
-                  separatorBuilder: (context, index) => SizedBox(
-                        height: 10.h,
+                      separatorBuilder: (context, index) => SizedBox(
+                            height: 10.h,
+                          ),
+                      itemCount: value.allCompanies.length)
+                  : const Center(
+                      child: Text(
+                        'Watchlist is empty !.',
+                        style:
+                            TextStyle(color: kSecondaryTextColor, fontSize: 20),
                       ),
-                  itemCount: value.allCompanies.length),
+                    ),
             ),
           ]),
         );

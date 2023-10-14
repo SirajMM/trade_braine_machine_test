@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:trade_brains/controller/home/home_controller.dart';
 import 'package:trade_brains/core/colors/color.dart';
 
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(
                           height: 40.h,
                           child: SearchBar(
-                            hintText: 'Search Companies',
+                            hintText: 'Search ',
                             controller: value.searchController,
                             leading: const Icon(Icons.search),
                             trailing: [
@@ -87,46 +88,80 @@ class _HomeScreenState extends State<HomeScreen> {
                         value.loading != true
                             ? Padding(
                                 padding: EdgeInsets.only(top: 10.h),
-                                child: SizedBox(
-                                    height: 522.h,
-                                    child: value.companyData?.bestMatches
-                                                .length !=
-                                            0
-                                        ? ListView.separated(
-                                            shrinkWrap: true,
-                                            physics:
-                                                const BouncingScrollPhysics(),
-                                            itemBuilder: (context, index) {
-                                              final data = value.companyData
-                                                  ?.bestMatches[index];
-                                              return CompanyTile(
-                                                text: data!.the2Name ?? '',
-                                                controller: controller,
-                                                symbol: data.the1Symbol ?? '',
-                                                name: data.the2Name ?? '',
-                                                matchScore:
-                                                    data.the9MatchScore ?? '',
-                                                onPressed: () {
-                                                  log('${value.companyData?.bestMatches[index].the1Symbol}');
-                                                  value.addToWatchList(index);
+                                child: value.searchController.text.isNotEmpty
+                                    ? SizedBox(
+                                        height: 522.h,
+                                        child: value.companyData?.bestMatches
+                                                    .length !=
+                                                0
+                                            ? ListView.separated(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const BouncingScrollPhysics(),
+                                                itemBuilder: (context, index) {
+                                                  final data = value.companyData
+                                                      ?.bestMatches[index];
+                                                  return CompanyTile(
+                                                    text: data!.the2Name ?? '',
+                                                    controller: controller,
+                                                    symbol:
+                                                        data.the1Symbol ?? '',
+                                                    name: data.the2Name ?? '',
+                                                    matchScore:
+                                                        data.the9MatchScore ??
+                                                            '',
+                                                    onPressed: () {
+                                                      log('${value.companyData?.bestMatches[index].the1Symbol}');
+                                                      value.addToWatchList(
+                                                          index);
+                                                    },
+                                                  );
                                                 },
-                                              );
-                                            },
-                                            separatorBuilder: (context, _) =>
-                                                SizedBox(
-                                              height: 10.h,
-                                            ),
-                                            itemCount: value.companyData
-                                                    ?.bestMatches.length ??
-                                                0,
-                                          )
-                                        : const Center(
-                                            child: Text(
-                                              'No Company found!',
+                                                separatorBuilder:
+                                                    (context, _) => SizedBox(
+                                                  height: 10.h,
+                                                ),
+                                                itemCount: value.companyData
+                                                        ?.bestMatches.length ??
+                                                    0,
+                                              )
+                                            : Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Lottie.asset(
+                                                      'assets/not found.json',
+                                                      width: 150.w,
+                                                      height: 150.h),
+                                                  Text(
+                                                    '${value.searchController.text} not found',
+                                                    style: const TextStyle(
+                                                        color:
+                                                            kSecondaryTextColor,
+                                                        fontSize: 20),
+                                                  ),
+                                                ],
+                                              ),
+                                      )
+                                    : SizedBox(
+                                        height: 500.h,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Lottie.asset(
+                                                'assets/searchjson.json',
+                                                width: 150.w,
+                                                height: 150.h),
+                                            const Text(
+                                              'Search Companies',
                                               style: TextStyle(
-                                                  color: Colors.white),
+                                                  color: kSecondaryTextColor,
+                                                  fontSize: 20),
                                             ),
-                                          )),
+                                          ],
+                                        ),
+                                      ),
                               )
                             : SizedBox(
                                 height: 550.h,

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:trade_brains/utiles/toast.dart';
 
 import '../../data_base/hive_model.dart';
 
@@ -28,11 +29,12 @@ class WatchListController extends GetxController {
     log("index ***$index");
     try {
       log('${companyToDelete.symbol}');
-      box.delete(companyToDelete);
+      box.deleteAt(index);
+      showToast('${companyToDelete.name} removed from watchlist');
     } catch (e) {
       log('Error deleting from Hive box: $e', error: e);
     }
-    print('After deletion: ${box.get(companyToDelete.symbol)}');
+    log('After deletion: ${box.get(companyToDelete.symbol)}');
 
     update();
   }
